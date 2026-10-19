@@ -106,6 +106,18 @@ describe('[Util]: internal', () => {
     it('converts a UTF-8 string with 2-byte characters to a hex string', () => {
       assert.strictEqual(fromUtf8('ϋύϒϗϘϢϰЂ'), '0xcf8bcf8dcf92cf97cf98cfa2cfb0d082')
     })
+
+    it('keeps zero nibbles inside the first and last bytes', () => {
+      assert.strictEqual(fromUtf8('p'), '0x70')
+      assert.strictEqual(fromUtf8('0'), '0x30')
+      assert.strictEqual(fromUtf8('\tA'), '0x0941')
+      assert.strictEqual(toAscii(fromUtf8('top')), 'top')
+    })
+
+    it('strips leading and trailing zero bytes', () => {
+      assert.strictEqual(fromUtf8('\u0000\u0000p\u0000'), '0x70')
+      assert.strictEqual(fromUtf8('\u0000'), '0x')
+    })
   })
 
   describe('[Util]: fromAscii', () => {

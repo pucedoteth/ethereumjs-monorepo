@@ -117,13 +117,14 @@ export function toAscii(hex: string): string {
   return str
 }
 
-/** Encode a UTF-8 string as a compact `0x`-prefixed hex value with outer zero nibbles stripped. */
+/** Encode a UTF-8 string as a compact `0x`-prefixed hex value with outer zero bytes stripped. */
 export function fromUtf8(stringValue: string) {
   const str = utf8ToBytes(stringValue)
 
   // Using deprecated bytesToUnprefixedHex for performance: we're building a hex string with 0x prefix,
   // so using bytesToUnprefixedHex avoids creating an intermediate prefixed string and then stripping it.
-  return `0x${padToEven(bytesToUnprefixedHex(str)).replace(/^0+|0+$/g, '')}`
+  // Strip whole `00` bytes only, so a byte like 0x70 or 0x09 keeps its zero nibble.
+  return `0x${bytesToUnprefixedHex(str).replace(/^(?:00)+|(?:00)+$/g, '')}`
 }
 
 /** Encode an ASCII string as a `0x`-prefixed hex value. */
